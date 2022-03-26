@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/24/2022. See version below.
 
-    const botVer = "4.0.1-a24"
+    const botVer = "4.0.1-a25"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -74,10 +74,10 @@
     var pairId = "None"
     var pairOp = "None"
     var pairName = gb.data.pairName
+    var pairBalanceAmt = 0
     var pairStrCnt = 0
     var pState = 0
     var pStateResult = "None"
-    var pairStrCnt = 0
     var resetStore = false //Manual reset of the customStratStore
     var rState = 0
     var rStatePct = 0
@@ -476,11 +476,11 @@
         pairId = pairName.slice(-2)
         pairBase = pairName.slice((pairDash + 1),- 2)
         if (pairId == "3L") {
-            pairOp = pairBase + "3S"
+            pairOp = "balances." + pairBase + "3S.available"
             console.log(pairOp)
         }
         else if (pairId == "3S") {
-            pairOp = pairBase + "3L"
+            pairOp = "balances." + pairBase + "3L.available"
             console.log(pairOp)
         }
         else {
@@ -488,7 +488,10 @@
             console.log(pairOp)
         }
        
-        console.log(balances)
+        pairBalanceResult = this[pairOp].value
+
+        console.log(pairOp + ": " + pairBalanceResult)
+
         /*
         pairResult = balances.find(post, index) {
             if  
