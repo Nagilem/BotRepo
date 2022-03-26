@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/26/2022. See version below.
 
-    const botVer = "4.0.1-a27"
+    const botVer = "4.0.1-a28"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -478,30 +478,19 @@
         pairId = pairName.slice(-2)
         pairBase = pairName.slice((pairDash + 1),- 2)
         if (pairId == "3L") {
-            pairOp = "balances." + pairBase + "3S.available"
-            console.log(pairOp)
+            pairOp = pairBase + "3S"
         }
         else if (pairId == "3S") {
-            pairOp = "balances." + pairBase + "3L.available"
-            console.log(pairOp)
+            pairOp = pairBase + "3L"
         }
         else {
             pairOp = 0
-            console.log(pairOp)
-        }
-       
-        pairBalanceResult = this[pairOp]
-        console.log(pairBalanceResult)
-
-        //console.log(pairOp + ": " + pairBalanceResult)
-
-        /*
-        pairResult = balances.find(post, index) {
-            if  
         }
         
-       
-        if (pairOp > 0) {
+        pairBalanceAmt = balances[pairOp][available]
+        console.log(pairOp + ": " + pairBalanceAmt)
+
+        if (pairBalanceAmt > 0) {
             noOPair = false
             console.log("Pair with assets found!")
         }
@@ -509,8 +498,7 @@
             noOPair = true
             console.log("No assets found. Proceeding with purchase action if warranted.")
         }
-        */
-
+        
         //setting up buy conditions and making purchase
         if (gb.data.quoteBalance == 0 && buyDec == "Buy" && noOPair == true) {
             console.log("There are no open orders and criteria is set to " + buyDec + ". Setting entry point...")
