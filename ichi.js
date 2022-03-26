@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/24/2022. See version below.
 
-    const botVer = "4.0.1-a25"
+    const botVer = "4.0.1-a26"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -488,9 +488,9 @@
             console.log(pairOp)
         }
        
-        pairBalanceResult = this[pairOp].value
+        //pairBalanceResult = this[pairOp].value
 
-        console.log(pairOp + ": " + pairBalanceResult)
+        //console.log(pairOp + ": " + pairBalanceResult)
 
         /*
         pairResult = balances.find(post, index) {
