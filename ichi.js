@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/24/2022. See version below.
 
-    const botVer = "4.0.1-a23"
+    const botVer = "4.0.1-a24"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -39,6 +39,7 @@
     var askIB = 0
     var askLow = 0
     var bid = gb.data.bid //bid price
+    var balances = gb.data.balances
     var baseLine = gb.data.kijun
     var bState = 0 //conversion / baseline point repository
     var bStateC1 = 0 //conversion / baseline criteria 1 point repository
@@ -72,7 +73,6 @@
     var pairDash = 0
     var pairId = "None"
     var pairOp = "None"
-    var pairEnable = false
     var pairName = gb.data.pairName
     var pairStrCnt = 0
     var pState = 0
@@ -472,28 +472,30 @@
         //checking to see if the opposite pairing has been bought
         pairStrCnt = pairName.length
         pairDash = pairName.search("-")
-        console.log(pairDash)
         pairStrCnt = pairStrCnt - pairDash
         pairId = pairName.slice(-2)
         pairBase = pairName.slice((pairDash + 1),- 2)
         if (pairId == "3L") {
-            pairOp = "gb.data.balances." + pairBase + "3S.available"
-            pairEnable = true
+            pairOp = pairBase + "3S"
             console.log(pairOp)
         }
         else if (pairId == "3S") {
             pairOp = pairBase + "3L"
-            pairEnable = true
             console.log(pairOp)
         }
         else {
-            pairBase = pairName.slice((pairDash + 1),pairStrCnt)
-            pairOp = "gb.data.balances." + pairBase + ".available"
-            pairEnable = false
+            pairOp = 0
             console.log(pairOp)
         }
-         
-        if (pairOp > 0 && pairEnable == true) {
+       
+        console.log(balances)
+        /*
+        pairResult = balances.find(post, index) {
+            if  
+        }
+        
+       
+        if (pairOp > 0) {
             noOPair = false
             console.log("Pair with assets found!")
         }
@@ -501,6 +503,7 @@
             noOPair = true
             console.log("No assets found. Proceeding with purchase action if warranted.")
         }
+        */
 
         //setting up buy conditions and making purchase
         if (gb.data.quoteBalance == 0 && buyDec == "Buy" && noOPair == true) {
