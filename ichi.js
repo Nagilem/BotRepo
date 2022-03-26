@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/26/2022. See version below.
 
-    const botVer = "4.0.1-a29"
+    const botVer = "4.0.1-a30"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -69,12 +69,13 @@
     var leadLine2 = gb.data.senkouSpanA
     var lState = 0
     var noOPair = 0
+    var pairBalanceAmt = 0
     var pairBase = "None"
     var pairDash = 0
     var pairId = "None"
     var pairOp = "None"
     var pairName = gb.data.pairName
-    var pairBalanceAmt = 0
+    var pairResult = "None"
     var pairStrCnt = 0
     var pState = 0
     var pStateResult = "None"
@@ -471,7 +472,7 @@
         console.log("Buy: " + buyThreshold + " | Sell: " + sellThreshold)
         console.log("Stop %: " + (stopLimitPct * 100) + "% | Trail Activate %: " + (trailBasePct * 100) + "% | Trail %: " + (gb.data.pairLedger.customStratStore.h.trailPct * 100) + "%")
 
-        //checking to see if the opposite pairing has been bought
+        //checking to see if the opposite pairing has already been bought
         pairStrCnt = pairName.length
         pairDash = pairName.search("-")
         pairStrCnt = pairStrCnt - pairDash
@@ -479,24 +480,26 @@
         pairBase = pairName.slice((pairDash + 1),- 2)
         if (pairId == "3L") {
             pairOp = pairBase + "3S"
+            pairResult = "Short"
         }
         else if (pairId == "3S") {
             pairOp = pairBase + "3L"
+            pairResult = "Long"
         }
         else {
             pairOp = 0
         }
         
         pairBalanceAmt = balances[pairOp]["available"]
-        console.log(pairOp + ": " + pairBalanceAmt)
-
+        
+        //limiting purchases if opposite pairing has a position
         if (pairBalanceAmt > 0) {
             noOPair = false
-            console.log("Pair with assets found!")
+            console.log(pairOp + " found with " + pairBalanceAmt + "assets. Holding purchases...")
         }
         else {
             noOPair = true
-            console.log("No assets found. Proceeding with purchase action if warranted.")
+            console.log("No contradicting assets found. Purchase actions authorized.")
         }
         
         //setting up buy conditions and making purchase
