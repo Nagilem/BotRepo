@@ -72,6 +72,7 @@
     var pairDash = 0
     var pairId = "None"
     var pairOp = "None"
+    var pairEnable = false
     var pairName = gb.data.pairName
     var pairStrCnt = 0
     var pState = 0
@@ -471,24 +472,28 @@
         //checking to see if the opposite pairing has been bought
         pairStrCnt = pairName.length
         pairDash = pairName.search("-")
+        console.log(pairDash)
         pairStrCnt = pairStrCnt - pairDash
         pairId = pairName.slice(-2)
-        pairBase = pairName.slice((pairDash + 1),(pairStrCnt - 2))
+        pairBase = pairName.slice((pairDash + 1),- 2)
         if (pairId == "3L") {
             pairOp = "gb.data.balances." + pairBase + "3S.available"
+            pairEnable = true
             console.log(pairOp)
         }
         else if (pairId == "3S") {
-            pairOp = "gb.data.balances." + pairBase + "3L.available"
+            pairOp = pairBase + "3L"
+            pairEnable = true
             console.log(pairOp)
         }
         else {
             pairBase = pairName.slice((pairDash + 1),pairStrCnt)
             pairOp = "gb.data.balances." + pairBase + ".available"
+            pairEnable = false
             console.log(pairOp)
         }
          
-        if (pairOp > 0) {
+        if (pairOp > 0 && pairEnable = true) {
             noOPair = false
             console.log("Pair with assets found!")
         }
