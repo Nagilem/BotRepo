@@ -7,7 +7,7 @@ sudo apt install wget unzip sqlite -y -q
 cd /home
 sudo wget https://github.com/GuntharDeNiro/BTCT/releases/download/2329/gunthy_linux.zip
 sudo unzip gunthy_linux.zip
-sudo wget https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+sudo wget -qO- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 source ~/.bash_profile 
 nvm install node
 npm install -g npm@latest
