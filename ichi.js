@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/26/2022. See version below.
 
-    const botVer = "4.0.1-a30"
+    const botVer = "4.0.1-a31"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -490,14 +490,23 @@
             pairOp = 0
         }
         
-        pairBalanceAmt = balances[pairOp]["available"]
-        
+        if(_.isNil(balances[pairOp])) {
+            pairBalanceAmt = -1
+        }
+        else {
+            pairBalanceAmt = balances[pairOp]["available"]
+        }
+
         //limiting purchases if opposite pairing has a position
         if (pairBalanceAmt > 0) {
             noOPair = false
             console.log(pairOp + " found with " + pairBalanceAmt + "assets. Holding purchases...")
         }
-        else {
+        else if (pairBalanceAmt == -1) {
+            noOPair = true
+            console.log("New pair detected. No contradicting assets. Purchase actions authorized.")
+        }
+        else{}
             noOPair = true
             console.log("No contradicting assets found. Purchase actions authorized.")
         }
