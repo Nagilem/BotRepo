@@ -8,7 +8,7 @@ cd /home
 sudo wget https://github.com/GuntharDeNiro/BTCT/releases/download/2329/gunthy_linux.zip
 sudo unzip gunthy_linux.zip
 sudo wget -qO- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-source ~/.profile 
+sudo source ~/.profile 
 nvm install node
 npm install -g npm@latest
 npm install uuid@latest
