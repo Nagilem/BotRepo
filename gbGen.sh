@@ -5,10 +5,10 @@ sudo apt-get update -y -q
 sudo apt-get upgrade -y -q
 sudo apt install wget unzip sqlite -y -q
 cd /home
-sudo wget -qO- https://github.com/GuntharDeNiro/BTCT/releases/download/2329/gunthy_linux.zip
+sudo wget https://github.com/GuntharDeNiro/BTCT/releases/download/2329/gunthy_linux.zip
 sudo unzip gunthy_linux.zip
-sudo wget -qO- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-source ~/.bashrc 
+sudo wget https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+source ~/.bash_profile 
 nvm install node
 npm install -g npm@latest
 npm install uuid@latest
