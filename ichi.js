@@ -1,8 +1,8 @@
 {
     //custom bot v1 by Rob Esparza
-    //Started 3/4/2022, latest update 3/24/2022. See version below.
+    //Started 3/4/2022, latest update 3/26/2022. See version below.
 
-    const botVer = "4.0.1-a26"
+    const botVer = "4.0.1-a27"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -389,6 +389,7 @@
             pState = pStateAmt * .5
             pStateResult = "2 POSITIVE candle closes with opens lower than lows."
         }
+        /*
         else if( 
             gb.data.candlesClose[gb.data.candlesClose.length - 2] < gb.data.candlesClose[gb.data.candlesClose.length - 1]
             && gb.data.candlesClose[gb.data.candlesOpen.length - 2] < gb.data.candlesClose[gb.data.candlesLow.length - 1]
@@ -396,6 +397,7 @@
             pState = pStateAmt * .25
             pStateResult = "1 POSITIVE candle close with an open lower than the low."
         }
+        */
         else if (
             gb.data.candlesClose[gb.data.candlesClose.length - 4] > gb.data.candlesClose[gb.data.candlesClose.length - 3]
             && gb.data.candlesClose[gb.data.candlesClose.length - 3] > gb.data.candlesClose[gb.data.candlesClose.length - 2]
@@ -488,7 +490,8 @@
             console.log(pairOp)
         }
        
-        //pairBalanceResult = this[pairOp].value
+        pairBalanceResult = this[pairOp]
+        console.log(pairBalanceResult)
 
         //console.log(pairOp + ": " + pairBalanceResult)
 
