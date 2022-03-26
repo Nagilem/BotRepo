@@ -476,20 +476,25 @@
         pairBase = pairName.slice((pairDash + 1),(pairStrCnt - 2))
         if (pairId == "3L") {
             pairOp = "gb.data.balances." + pairBase + "3S.available"
+            console.log(pairOp)
         }
         else if (pairId == "3S") {
             pairOp = "gb.data.balances." + pairBase + "3L.available"
+            console.log(pairOp)
         }
         else {
             pairBase = pairName.slice((pairDash + 1),pairStrCnt)
             pairOp = "gb.data.balances." + pairBase + ".available"
+            console.log(pairOp)
         }
          
         if (pairOp > 0) {
             noOPair = false
+            console.log("Pair with assets found!")
         }
         else {
             noOPair = true
+            console.log("No assets found. Proceeding with purchase action if warranted.")
         }
 
         //setting up buy conditions and making purchase
