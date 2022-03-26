@@ -1,3 +1,5 @@
+#!/bin/bash
+
 nvm install node
 npm install -g npm@latest
 npm install uuid@latest
