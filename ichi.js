@@ -19,7 +19,7 @@
     const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; //months for date calcs
     const noAmt = 0 // no points for bearish indicator
     const pStateAmt = 35 // ** the total amount of points out of 100 for price above cloud support - no points for price below cloud support
-    const purchaseAmt = 100 // amount in USDT to use per trade
+    const purchaseAmt = 20 // amount in USDT to use per trade
     const rStateAmt = 25 // ** the total amount of points out of 100 for rising price over last three rounds
     const sellThreshold = 29 // number between 0-100 to tell the bot the threshold of the evaluated indicators at which to sell
     const sellWaitGain = 3 //number of rounds to wait before allowing another purchases when last was a gain
