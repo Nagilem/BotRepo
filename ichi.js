@@ -469,7 +469,7 @@
         console.log("Stop %: " + (stopLimitPct * 100) + "% | Trail Activate %: " + (trailBasePct * 100) + "% | Trail %: " + (gb.data.pairLedger.customStratStore.h.trailPct * 100) + "%")
 
         //checking to see if the opposite pairing has been bought
-        pairStrCnt = pairName.length()
+        pairStrCnt = pairName.length
         pairDash = pairName.search("-")
         pairStrCnt = pairStrCnt - pairDash
         pairId = pairName.slice(-2)
