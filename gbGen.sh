@@ -14,12 +14,11 @@ npm install -g npm@latest
 npm install uuid@latest
 npm install --save lodash@latest
 npm install pm2
-
 cd /home/gunthy_linux
 sudo mkdir user_modules
 cd user_modules
 sudo cp -R /home/botmaster/node_modules/lodash .
 cd /home/gunthy_linux
-sudo wget https://github.com/Nagilem/BotRepo/blob/d6eefac907d3715eaa102ee62939dc1cd674aacf/ichi.js
+sudo wget https://github.com/Nagilem/BotRepo/blob/main/ichi.js
 cd /home
 sudo chmod -R 777 gunthy_linux
