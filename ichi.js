@@ -506,7 +506,7 @@
             noOPair = true
             console.log("New pair detected. No contradicting assets. Purchase actions authorized.")
         }
-        else{}
+        else{
             noOPair = true
             console.log("No contradicting assets found. Purchase actions authorized.")
         }
