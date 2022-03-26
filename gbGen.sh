@@ -12,4 +12,4 @@ cd /home/gunthy_linux
 sudo mkdir user_modules
 sudo wget https://raw.githubusercontent.com/Nagilem/BotRepo/main/ichi.js
 cd /
-sudo wget 
+sudo wget https://raw.githubusercontent.com/Nagilem/BotRepo/main/gbFin.sh
