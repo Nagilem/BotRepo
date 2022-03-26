@@ -1,10 +1,10 @@
 #!/bin/bash
 # Gunbot Linux Genesis script - This sets up the linux environment to run Gunbot
 
-sudo apt-get update -y -q
-sudo apt-get upgrade -y -q
-sudo apt install wget unzip sqlite -y -q
-cd /home
+#sudo apt-get update -y -q
+#sudo apt-get upgrade -y -q
+#sudo apt install wget unzip sqlite -y -q
+#cd /home
 #sudo wget -qO- https://github.com/GuntharDeNiro/BTCT/releases/download/2329/gunthy_linux.zip
 #sudo unzip gunthy_linux.zip
 #sudo wget -qO- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
