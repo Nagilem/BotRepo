@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/24/2022. See version below.
 
-    const botVer = "4.0.1-a21"
+    const botVer = "4.0.1-a22"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
