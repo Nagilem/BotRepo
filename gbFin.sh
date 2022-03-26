@@ -6,9 +6,9 @@
 #nvm install node
 
 npm install -g npm@latest
-npm install uuid@latest
+npm install -g uuid@8.3.2
 npm install --save lodash@latest
-npm install pm2
+npm install -g pm2
 cd /home/gunthy_linux/user_modules
 sudo cp -R /home/botmaster/node_modules/lodash .
 cd /home
