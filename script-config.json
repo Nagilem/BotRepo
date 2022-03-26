@@ -1,4 +1,4 @@
 {
-    "fileUris": ["https://github.com/Nagilem/BotRepo/blob/da2b29c3be06c5ed0aa23ccd9058ff75e71f9e75/gbGen.sh"],
+    "fileUris": ["https://github.com/Nagilem/BotRepo/blob/main/gbGen.sh"],
     "commandToExecute": "./gbGen.sh"
   }
