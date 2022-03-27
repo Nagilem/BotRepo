@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/26/2022. See version below.
 
-    const botVer = "4.0.1-a32"
+    const botVer = "4.0.1-a33"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -26,10 +26,10 @@
     const sellWaitLoss = 15 //number of rounds to wait before allowing another purchase when last was a loss
     const sellWaitLoss2 = 30 //number of rounds to wait before allowing another purchase when more than last was a loss
     const stopLimitPct = .1 // pct of gain to setup a stop/limit price
-    const trailBasePct = .01 // pct of gain to activate / setup a trail limit price
-    const trailPct = .005  // pct amount of trail stop after a activation to setup sell
-    const trailPct1 = .01 //pct amount of trail stop after 5% profit
-    const trailPct2 = .02 //pct amount of trail stop after 10% profit
+    const trailBasePct = .02 // pct of gain to activate / setup a trail limit price
+    const trailPct = .01  // pct amount of trail stop after a activation to setup sell
+    const trailPct1 = .015 //pct amount of trail stop after 5% profit
+    const trailPct2 = .025 //pct amount of trail stop after 10% profit
     const trailPct3 = .05 //pct amount of trail stop after 25% profit
     
     // Variables to be set as the script is processing
