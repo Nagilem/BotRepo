@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/26/2022. See version below.
 
-    const botVer = "4.0.1-a34"
+    const botVer = "4.0.1-a35"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -79,13 +79,21 @@
     var pairResult = "None"
     var pairStrCnt = 0
     var pState = 0
-    var pStateResult = "None"
+    var pStateC1 = 0
+    var pStateC2 = 0
+    var pStateResultC1 = "None"
+    var pStateResultC2 = "None"
     var resetStore = false //Manual reset of the customStratStore
+    var resistance1 = gb.data.R1
     var rState = 0
     var rStatePct = 0
     var rStateReason = "None"
+    var saDiff = 0
+    var saDiffPct = 0
     var sellNow = false
     var sellReason = "None"
+    var srDiff1 = 0
+    var support1 = gb.data.S1
     var tradeState = "None"
     var trailCalc = 0
 
@@ -370,6 +378,28 @@
         console.log("Cloud State: " + cState + " Color: " + cColor + " | Lead1: "  + leadLine1 + " Lead2: " + leadLine2 )
         console.log("--------------------------------------------------------------------")
         
+        //calculating the current ask versus the support/resistance lines        
+        srDiff1 = resistance1 - support1
+        saDiff = ask - support1
+        saDiffPct = srDiff1/saDiff
+        
+        if (srDiffPct > 1){
+            pStateC1 = pStateAmt * .5
+            pStateResultC1 = "Ask is over R1."
+        }
+        else if (saDiffPct < 1 && saDiffPct > .5) {
+            pStateC1 = (pStateAmt * -.5) * saDiffPct 
+            pStateResultC1 = "Ask is over half but under R1."
+        }
+        else if (saDiffPct < .5 && saDiffPct > .0) {
+            pStateC1 = (pStateAmt * .5) * saDiffPct 
+            pStateResultC1 = "Ask is under half but over S1."
+        }
+        else if (saDiffPct < 0) {
+            pStateC1 = pStateAmt * -.5
+            pStateResultC1 = "Ask is under S1."
+        }
+
         // checking price history for green or red candle closes over the past 4 candles
         if (
             gb.data.candlesClose[gb.data.candlesClose.length - 4] < gb.data.candlesClose[gb.data.candlesClose.length - 3]
@@ -379,8 +409,8 @@
             && gb.data.candlesClose[gb.data.candlesClose.length - 2] < gb.data.candlesClose[gb.data.candlesClose.length - 1]
             && gb.data.candlesClose[gb.data.candlesOpen.length - 2] < gb.data.candlesClose[gb.data.candlesLow.length - 1]
         ) {
-            pState = pStateAmt
-            pStateResult = "3 POSITIVE candle closes with opens lower than lows."
+            pStateC2 = pStateAmt *.5
+            pStateResultC2 = "3 POSITIVE candle closes with opens lower than lows."
         }
         else if( 
             gb.data.candlesClose[gb.data.candlesClose.length - 3] < gb.data.candlesClose[gb.data.candlesClose.length - 2]
@@ -388,34 +418,40 @@
             && gb.data.candlesClose[gb.data.candlesClose.length - 2] < gb.data.candlesClose[gb.data.candlesClose.length - 1]
             && gb.data.candlesClose[gb.data.candlesOpen.length - 2] < gb.data.candlesClose[gb.data.candlesLow.length - 1]
         ) {
-            pState = pStateAmt * .5
-            pStateResult = "2 POSITIVE candle closes with opens lower than lows."
+            pStateC2 = pStateAmt * .25
+            pStateResultC2 = "2 POSITIVE candle closes with opens lower than lows."
         }
         else if (
             gb.data.candlesClose[gb.data.candlesClose.length - 4] > gb.data.candlesClose[gb.data.candlesClose.length - 3]
             && gb.data.candlesClose[gb.data.candlesClose.length - 3] > gb.data.candlesClose[gb.data.candlesClose.length - 2]
             && gb.data.candlesClose[gb.data.candlesClose.length - 2] > gb.data.candlesClose[gb.data.candlesClose.length - 1]
         ) {
-            pState = pStateAmt * -1
-            pStateResult = "3 NEGATIVE candle closes."
+            pStateC2 = pStateAmt * -.5
+            pStateResultC2 = "3 NEGATIVE candle closes."
         }
         else if (
             gb.data.candlesClose[gb.data.candlesClose.length - 3] > gb.data.candlesClose[gb.data.candlesClose.length - 2]
             && gb.data.candlesClose[gb.data.candlesClose.length - 2] > gb.data.candlesClose[gb.data.candlesClose.length - 1]
             ) {
-            pState = pStateAmt * -.5
-            pStateResult = "2 NEGATIVE candle closes."
+            pStateC2 = pStateAmt * -.25
+            pStateResultC2 = "2 NEGATIVE candle closes."
         }
         else if (gb.data.candlesClose[gb.data.candlesClose.length - 2] > gb.data.candlesClose[gb.data.candlesClose.length - 1]) {
-            pState = pStateAmt * -.25
-            pStateResult = "1 NEGATIVE candle close."
+            pStateC2 = pStateAmt * -.1
+            pStateResultC2 = "1 NEGATIVE candle close."
         }
         else {
-            pState = noAmt
-            pStateResult = "Inconclusive trend."
+            pStateC2 = noAmt
+            pStateResultC2 = "Inconclusive trend."
         }
-        console.log("Price State: " + pState + " | Result: " + pStateResult)
+        
+        pState = pStateC1 + pstateC2
+        
+        console.log("Price State: " + pState + " | C1 Result: " + pStateResultC1 + " C2 Result: " + pStateResultC2)
         console.log("--------------------------------------------------------------------")
+        console.log("C1: " + pStateC1)
+        console.log("   R1: " + resistance1 + " S1: " + support1 + " % Diff: " + saDiffPct)
+        console.log("C2: " + pStateC2)
         console.log("   Close[4]: " + gb.data.candlesClose[gb.data.candlesClose.length - 4])
         console.log("   Close[3]: " + gb.data.candlesClose[gb.data.candlesClose.length - 3])
         console.log("   Close[2]: " + gb.data.candlesClose[gb.data.candlesClose.length - 2])
@@ -515,10 +551,7 @@
             gb.data.pairLedger.customStratStore.h.trailPct = trailPct
             gb.data.pairLedger.customStratStore.h.sellWait = 0
         } 
-        else if (gb.data.quoteBalance > 0 && buyDec == "Sell") {
-            console.log("There is an open order and criteria is set to " + buyDec + ". Setting exit point...")
-        }
-        
+                
         //calculating gain
         if (gb.data.pairLedger.customStratStore.h.buyPrice[gb.data.pairLedger.customStratStore.h.buyPrice.length -1] > 0) {
             gainCalc = (ask - gb.data.pairLedger.customStratStore.h.buyPrice[gb.data.pairLedger.customStratStore.h.buyPrice.length -1])/ask
