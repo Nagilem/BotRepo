@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/26/2022. See version below.
 
-    const botVer = "4.0.1-a33"
+    const botVer = "4.0.1-a34"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -12,25 +12,26 @@
     const AvgNum = 30 //number of candles to average to figure the rate of change of conversion line
     const bStateAmt = 25 // ** the total amount of points out of 100 for conversion line over base line - no points for bearish indication
     const buyThreshold = 66 // number between 0-100 to tell the bot the floor of the evaluated indicators at which to buy
-    const cStateAmt = 10 // ** total amount of points out of 100 for cloud being green - no points for red
+    const cStateAmt = 15 // ** total amount of points out of 100 for cloud being green - no points for red
     const entries = 60 //number of historical entries to keep for evaluation before starting culling
+    const fcPct = -.035  //percent threshold below buy price to allow evaluation of fundamental criteria for sale of assets
     const ImmedBuy = buyThreshold + 1
-    const lStateAmt = 5 // ** the total amount of points out of 100 for close higher than SMA for last 15 closes - no points if close is below
+    const lStateAmt = 10 // ** the total amount of points out of 100 for close higher than SMA for last 15 closes - no points if close is below
     const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; //months for date calcs
     const noAmt = 0 // no points for bearish indicator
-    const pStateAmt = 35 // ** the total amount of points out of 100 for price above cloud support - no points for price below cloud support
+    const pStateAmt = 30 // ** the total amount of points out of 100 for price above cloud support - no points for price below cloud support
     const purchaseAmt = 20 // amount in USDT to use per trade
-    const rStateAmt = 25 // ** the total amount of points out of 100 for rising price over last three rounds
-    const sellThreshold = 29 // number between 0-100 to tell the bot the threshold of the evaluated indicators at which to sell
-    const sellWaitGain = 3 //number of rounds to wait before allowing another purchases when last was a gain
+    const rStateAmt = 20 // ** the total amount of points out of 100 for rising price over last three rounds
+    const sellThreshold = 14 // number between 0-100 to tell the bot the threshold of the evaluated indicators at which to sell
+    const sellWaitGain = 1 //number of rounds to wait before allowing another purchases when last was a gain
     const sellWaitLoss = 15 //number of rounds to wait before allowing another purchase when last was a loss
     const sellWaitLoss2 = 30 //number of rounds to wait before allowing another purchase when more than last was a loss
-    const stopLimitPct = .1 // pct of gain to setup a stop/limit price
+    const stopLimitPct = .07 // pct of gain to setup a stop/limit price
     const trailBasePct = .02 // pct of gain to activate / setup a trail limit price
     const trailPct = .01  // pct amount of trail stop after a activation to setup sell
     const trailPct1 = .015 //pct amount of trail stop after 5% profit
     const trailPct2 = .025 //pct amount of trail stop after 10% profit
-    const trailPct3 = .05 //pct amount of trail stop after 25% profit
+    const trailPct3 = .035 //pct amount of trail stop after 25% profit
     
     // Variables to be set as the script is processing
     var ask = gb.data.ask //ask price
@@ -315,7 +316,7 @@
             && ask > gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 3]
         ) {
             rState = rStateAmt
-            rStateReason = "Price is trending UP for last three rounds."
+            rStateReason = "Price is trending UP for last three evaluated rounds."
         }
         else if(askDiff > askIB) {
             rState = ImmedBuy
@@ -331,7 +332,7 @@
             && ask < gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 3]
         ) {
             rState = rStateAmt * -1
-            rStateReason = "Price is trending DOWN for last three rounds." 
+            rStateReason = "Price is trending DOWN for last three evaluated rounds." 
         }
         else if(askDiff < askLow) {
             rState = rStateAmt * -1
@@ -339,7 +340,7 @@
         }
         else {
             rState = noAmt
-            rStateReason = "Price is not trending clearly."
+            rStateReason = "Inconclusive trend."
         }
         console.log("Rising State: " + rState + " | Reason: " + rStateReason)
         console.log("--------------------------------------------------------------------")
@@ -390,15 +391,6 @@
             pState = pStateAmt * .5
             pStateResult = "2 POSITIVE candle closes with opens lower than lows."
         }
-        /*
-        else if( 
-            gb.data.candlesClose[gb.data.candlesClose.length - 2] < gb.data.candlesClose[gb.data.candlesClose.length - 1]
-            && gb.data.candlesClose[gb.data.candlesOpen.length - 2] < gb.data.candlesClose[gb.data.candlesLow.length - 1]
-        ) {
-            pState = pStateAmt * .25
-            pStateResult = "1 POSITIVE candle close with an open lower than the low."
-        }
-        */
         else if (
             gb.data.candlesClose[gb.data.candlesClose.length - 4] > gb.data.candlesClose[gb.data.candlesClose.length - 3]
             && gb.data.candlesClose[gb.data.candlesClose.length - 3] > gb.data.candlesClose[gb.data.candlesClose.length - 2]
@@ -497,7 +489,7 @@
             pairBalanceAmt = balances[pairOp]["available"]
         }
 
-        //limiting purchases if opposite pairing has a position
+        //limiting purchases if contradicting pair has a position
         if (pairBalanceAmt > 0) {
             noOPair = false
             console.log(pairOp + " found with " + pairBalanceAmt + " assets. Holding purchases...")
@@ -546,7 +538,7 @@
             && gb.data.pairLedger.customStratStore.h.lag[gb.data.pairLedger.customStratStore.h.lag.length - 1] < gb.data.pairLedger.customStratStore.h.lag[gb.data.pairLedger.customStratStore.h.lag.length - 2]
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1] < gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 2]
             && gb.data.pairLedger.customStratStore.h.lead1[gb.data.pairLedger.customStratStore.h.lead1.length - 1] < gb.data.pairLedger.customStratStore.h.lead1[gb.data.pairLedger.customStratStore.h.lead1.length - 2]
-            && gainCalc < trailBasePct
+            && gainCalc > trailBasePct
         ) {
             sellNow = true
             sellReason = "Sold due to declining indicators."   
@@ -554,7 +546,7 @@
         else if (
             gb.data.quoteBalance > 0
             && buyDec == "Sell"
-            && gainCalc < trailBasePct
+            && gainCalc < fcPct
         ) {
             sellNow = true
             sellReason = "Sold due to deteriorating fundamental criteria."
