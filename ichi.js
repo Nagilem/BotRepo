@@ -546,7 +546,7 @@
             && gb.data.pairLedger.customStratStore.h.lag[gb.data.pairLedger.customStratStore.h.lag.length - 1] < gb.data.pairLedger.customStratStore.h.lag[gb.data.pairLedger.customStratStore.h.lag.length - 2]
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1] < gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 2]
             && gb.data.pairLedger.customStratStore.h.lead1[gb.data.pairLedger.customStratStore.h.lead1.length - 1] < gb.data.pairLedger.customStratStore.h.lead1[gb.data.pairLedger.customStratStore.h.lead1.length - 2]
-            && gaincalc < trailBasePct
+            && gainCalc < trailBasePct
         ) {
             sellNow = true
             sellReason = "Sold due to declining indicators."   
@@ -554,7 +554,7 @@
         else if (
             gb.data.quoteBalance > 0
             && buyDec == "Sell"
-            && gaincalc < trailBasePct
+            && gainCalc < trailBasePct
         ) {
             sellNow = true
             sellReason = "Sold due to deteriorating fundamental criteria."
