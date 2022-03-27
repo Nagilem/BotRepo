@@ -2,7 +2,7 @@
     //custom bot v1 by Rob Esparza
     //Started 3/4/2022, latest update 3/26/2022. See version below.
 
-    const botVer = "4.0.1-a31"
+    const botVer = "4.0.1-a32"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -25,12 +25,12 @@
     const sellWaitGain = 3 //number of rounds to wait before allowing another purchases when last was a gain
     const sellWaitLoss = 15 //number of rounds to wait before allowing another purchase when last was a loss
     const sellWaitLoss2 = 30 //number of rounds to wait before allowing another purchase when more than last was a loss
-    const stopLimitPct = .03 // pct of gain to setup a stop/limit price
+    const stopLimitPct = .1 // pct of gain to setup a stop/limit price
     const trailBasePct = .01 // pct of gain to activate / setup a trail limit price
-    const trailPct = .02  // pct amount of trail stop after a activation to setup sell
-    const trailPct1 = .015 //pct amount of trail stop after 5% profit
-    const trailPct2 = .01 //pct amount of trail stop after 10% profit
-    const trailPct3 = .005 //pct amount of trail stop after 25% profit
+    const trailPct = .005  // pct amount of trail stop after a activation to setup sell
+    const trailPct1 = .01 //pct amount of trail stop after 5% profit
+    const trailPct2 = .02 //pct amount of trail stop after 10% profit
+    const trailPct3 = .05 //pct amount of trail stop after 25% profit
     
     // Variables to be set as the script is processing
     var ask = gb.data.ask //ask price
@@ -500,11 +500,11 @@
         //limiting purchases if opposite pairing has a position
         if (pairBalanceAmt > 0) {
             noOPair = false
-            console.log(pairOp + " found with " + pairBalanceAmt + "assets. Holding purchases...")
+            console.log(pairOp + " found with " + pairBalanceAmt + " assets. Holding purchases...")
         }
         else if (pairBalanceAmt == -1) {
             noOPair = true
-            console.log("New pair detected. No contradicting assets. Purchase actions authorized.")
+            console.log("This is a new pair . No contradicting assets. Purchase actions authorized.")
         }
         else{
             noOPair = true
@@ -526,6 +526,11 @@
         else if (gb.data.quoteBalance > 0 && buyDec == "Sell") {
             console.log("There is an open order and criteria is set to " + buyDec + ". Setting exit point...")
         }
+        
+        //calculating gain
+        if (gb.data.pairLedger.customStratStore.h.buyPrice[gb.data.pairLedger.customStratStore.h.buyPrice.length -1] > 0) {
+            gainCalc = (ask - gb.data.pairLedger.customStratStore.h.buyPrice[gb.data.pairLedger.customStratStore.h.buyPrice.length -1])/ask
+        }
 
         //setting up sell conditions for stop, trail and criteria
         if (gb.data.quoteBalance > 0 && ask < gb.data.pairLedger.customStratStore.h.stopLoss) {
@@ -536,27 +541,30 @@
             sellNow = true
             sellReason = "Selling due to Trail stop breach."
         }
-        /*
         else if (
             gb.data.quoteBalance > 0
             && gb.data.pairLedger.customStratStore.h.lag[gb.data.pairLedger.customStratStore.h.lag.length - 1] < gb.data.pairLedger.customStratStore.h.lag[gb.data.pairLedger.customStratStore.h.lag.length - 2]
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1] < gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 2]
             && gb.data.pairLedger.customStratStore.h.lead1[gb.data.pairLedger.customStratStore.h.lead1.length - 1] < gb.data.pairLedger.customStratStore.h.lead1[gb.data.pairLedger.customStratStore.h.lead1.length - 2]
-            ) {
+            && gaincalc < trailBasePct
+        ) {
             sellNow = true
             sellReason = "Sold due to declining indicators."   
         }
-        */
+        else if (
+            gb.data.quoteBalance > 0
+            && buyDec == "Sell"
+            && gaincalc < trailBasePct
+        ) {
+            sellNow = true
+            sellReason = "Sold due to deteriorating fundamental criteria."
+        }
 
         //setting trailpct based on amount of profit
-        if (_.isNil(gb.data.pairLedger.customStratStore.h.trailPct)){
+        if (_.isNil(gb.data.pairLedger.customStratStore.h.trailPct)) {
             gb.data.pairLedger.customStratStore.h.trailPct = trailPct
         }
         
-        if (gb.data.pairLedger.customStratStore.h.buyPrice[gb.data.pairLedger.customStratStore.h.buyPrice.length -1] > 0) {
-        gainCalc = (ask - gb.data.pairLedger.customStratStore.h.buyPrice[gb.data.pairLedger.customStratStore.h.buyPrice.length -1])/ask
-        }
-
         if (gainCalc > .25) {
             gb.data.pairLedger.customStratStore.h.trailPct = trailPct3
         }
