@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a44"
+    const botVer = "4.0.1-a45"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -389,8 +389,8 @@
         }
         else if (ask > srMid && ask < resistance1) {
             saDiff = (ask - srMid)
-            saDiffPct = saDiff/srDiff1 
-            pStateC1 = (pStateAmt * -.5) * saDiffPct 
+            saDiffPct = (saDiff/srDiff1) * -1 
+            pStateC1 = (pStateAmt * .5) * saDiffPct 
             pStateResultC1 = "Ask OVER half UNDER R1."    
         }
         else if (ask > support1 && ask < srMid) {
@@ -455,7 +455,7 @@
         console.log("Price State: " + pState + " | C1 Result: " + pStateResultC1 + " C2 Result: " + pStateResultC2)
         console.log("--------------------------------------------------------------------")
         console.log("C1: " + pStateC1)
-        console.log("   R1: " + resistance1 + " S1: " + support1 + " % Diff: " + saDiffPct)
+        console.log("   R1: " + resistance1 + " S1: " + support1 + "  % Diff: " + saDiffPct)
         console.log("C2: " + pStateC2)
         console.log("   Close[4]: " + gb.data.candlesClose[gb.data.candlesClose.length - 4])
         console.log("   Close[3]: " + gb.data.candlesClose[gb.data.candlesClose.length - 3])
