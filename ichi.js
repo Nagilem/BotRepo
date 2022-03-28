@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a43"
+    const botVer = "4.0.1-a44"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -93,6 +93,7 @@
     var sellNow = false
     var sellReason = "None"
     var srDiff1 = 0
+    var srMid = 0
     var support1 = gb.data.S1
     var tradeState = "None"
     var trailCalc = 0
@@ -380,29 +381,26 @@
         
         //calculating the current ask versus the support/resistance lines        
         srDiff1 = (resistance1 - support1) * .5
-        saDiff = (ask - support1) * .5
-        saDiffPct = saDiff/srDiff1
+        srMid = support1 + srDiff1
         
-        if (((ask - support1)/(resistance1 - support1)) > 1){
-            pStateC1 = pStateAmt * .5
+        if (ask > resistance1) {
+            pStateC1 = noAmt
             pStateResultC1 = "Ask OVER R1."
         }
-        else if (
-            ((ask - support1)/(resistance1 - support1)) < 1 
-            && ((ask - support1)/(resistance1 - support1)) >= .5
-        ) {
+        else if (ask > srMid && ask < resistance1) {
+            saDiff = (ask - srMid)
+            saDiffPct = saDiff/srDiff1 
             pStateC1 = (pStateAmt * -.5) * saDiffPct 
-            pStateResultC1 = "Ask OVER half UNDER R1."
+            pStateResultC1 = "Ask OVER half UNDER R1."    
         }
-        else if (
-            ((ask - support1)/(resistance1 - support1)) < .5 
-            && ((ask - support1)/(resistance1 - support1)) > .0
-        ) {
+        else if (ask > support1 && ask < srMid) {
+            saDiff = (ask - support1)
+            saDiffPct = saDiff/srDiff1
             saDiffPct = 1 - saDiffPct
             pStateC1 = (pStateAmt * .5) * saDiffPct 
             pStateResultC1 = "Ask UNDER half OVER S1."
         }
-        else if (((ask - support1)/(resistance1 - support1)) < 0) {
+        else if (ask < support1) {
             pStateC1 = pStateAmt * -.5
             pStateResultC1 = "Ask UNDER S1."
         }
