@@ -1,6 +1,7 @@
 #!/bin/bash
 # Gunbot Linux Genesis script - This sets up the linux environment to run Gunbot
 
+sudo timedatectl set-timezone America/Phoenix
 sudo apt-get update -y -q
 sudo apt-get upgrade -y -q
 sudo apt install wget unzip sqlite -y -q

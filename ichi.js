@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a48"
+    const botVer = "4.0.1-a49"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -12,15 +12,15 @@
     const AvgNum = 30 //number of candles to average to figure the rate of change of conversion line
     const bStateAmt = 25 // ** the total amount of points out of 100 for conversion line over base line - no points for bearish indication
     const buyThreshold = 66 // number between 0-100 to tell the bot the floor of the evaluated indicators at which to buy
-    const cStateAmt = 15 // ** total amount of points out of 100 for cloud being green - no points for red
+    const cStateAmt = 10 // ** total amount of points out of 100 for cloud being green - no points for red
     const entries = 60 //number of historical entries to keep for evaluation before starting culling
     const fcPct = -.035  //percent threshold below buy price to allow evaluation of fundamental criteria for sale of assets
-    const ImmedBuy = buyThreshold + 1
+    const ImmedBuy = buyThreshold + 1 //points needed to force an immediate buy of an asset
     const lStateAmt = 10 // ** the total amount of points out of 100 for close higher than SMA for last 15 closes - no points if close is below
     const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; //months for date calcs
     const noAmt = 0 // no points for bearish indicator
-    const pStateAmt = 30 // ** the total amount of points out of 100 for price above cloud support - no points for price below cloud support
-    const purchaseAmt = 20 // amount in USDT to use per trade
+    const pStateAmt = 35 // ** the total amount of points out of 100 for price above cloud support - no points for price below cloud support
+    const purchaseAmt = 150 // amount in USDT to use per trade
     const rStateAmt = 20 // ** the total amount of points out of 100 for rising price over last three rounds
     const sellThreshold = 14 // number between 0-100 to tell the bot the threshold of the evaluated indicators at which to sell
     const sellWaitGain = 1 //number of rounds to wait before allowing another purchases when last was a gain
@@ -109,7 +109,7 @@
 
     // printing the current indicator readings 
     console.log("********************************************************************")
-    console.log("                            " + pairName + "        Bot Version: " + botVer)
+    console.log("                            " + pairName + "       Bot Version: " + botVer)
     console.log("********************************************************************")
     
     // checking the strat store and creating if one doesn't exist.
@@ -223,7 +223,7 @@
         
         // checking if the conversion line is bullish
         if (conversionLine >= baseLine) {
-            bStateC1 = bStateAmt * .2 // blue line high
+            bStateC1 = bStateAmt * .3 // blue line high
         }
         else {
             bStateC1 = noAmt // red line high
@@ -235,13 +235,13 @@
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 10] >= gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 20] 
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1] >= gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 10]
             ) {
-            bStateC2 = bStateAmt * .2
+            bStateC2 = bStateAmt * .3
         }
         else if (
             gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 5] >= gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 10] 
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length- 1] >= gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 5]
             ) {
-            bStateC2 = bStateAmt * .1
+            bStateC2 = bStateAmt * .15
         }
         else if (gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1] >= gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 5]) {
             bStateC2 = bStateAmt * .05
@@ -268,14 +268,14 @@
             bStateC3 = bStateAmt * .05
         }
 
-        //checking if a cross has happened within the past 2 rounds
+        //checking if a cross has happened within the past 4 rounds
         if (
             gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1] >= gb.data.pairLedger.customStratStore.h.bLine[gb.data.pairLedger.customStratStore.h.bLine.length - 1] 
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 2] <= gb.data.pairLedger.customStratStore.h.bLine[gb.data.pairLedger.customStratStore.h.bLine.length - 2]
             ) {
             let bStateCrossDate = new Date()
             gb.data.pairLedger.customStratStore.h.bStateCrossDate = ("0" + bStateCrossDate.getHours()).slice(-2) + ":" + ("0" + bStateCrossDate.getMinutes()).slice(-2) + " " + ("0" + bStateCrossDate.getDate()).slice(-2) + "-" + months[bStateCrossDate.getMonth()] + "-" + bStateCrossDate.getFullYear()
-            bStateC4 = bStateAmt * .3
+            bStateC4 = bStateAmt * .1
         }
         else if (
             gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 2] >= gb.data.pairLedger.customStratStore.h.bLine[gb.data.pairLedger.customStratStore.h.bLine.length - 2] 
@@ -283,7 +283,7 @@
             ) {
             let bStateCrossDate = new Date()
             gb.data.pairLedger.customStratStore.h.bStateCrossDate = ("0" + bStateCrossDate.getHours()).slice(-2) + ":" + ("0" + bStateCrossDate.getMinutes()).slice(-2) + " " + ("0" + bStateCrossDate.getDate()).slice(-2) + "-" + months[bStateCrossDate.getMonth()] + "-" + bStateCrossDate.getFullYear()
-            bStateC4 = bStateAmt * .3
+            bStateC4 = bStateAmt * .1
         }
         else if (
             gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 3] >= gb.data.pairLedger.customStratStore.h.bLine[gb.data.pairLedger.customStratStore.h.bLine.length - 3] 
@@ -291,7 +291,7 @@
             ) {
             let bStateCrossDate = new Date()
             gb.data.pairLedger.customStratStore.h.bStateCrossDate = ("0" + bStateCrossDate.getHours()).slice(-2) + ":" + ("0" + bStateCrossDate.getMinutes()).slice(-2) + " " + ("0" + bStateCrossDate.getDate()).slice(-2) + "-" + months[bStateCrossDate.getMonth()] + "-" + bStateCrossDate.getFullYear()
-            bStateC4 = bStateAmt * .3
+            bStateC4 = bStateAmt * .1 
         }
         else {
             bStateC4 = noAmt
@@ -384,21 +384,21 @@
         srMid = support1 + srDiff1
         
         if (ask > resistance1) {
-            pStateC1 = noAmt
+            pStateC1 = pStateAmt * .5
             pStateResultC1 = "Ask OVER R1."
         }
         else if (ask >= srMid && ask < resistance1) {
             saDiff = (ask - srMid)
             saDiffPct = (saDiff/srDiff1) * -1 
             pStateC1 = Math.round((pStateAmt * .5) * saDiffPct)
-            pStateResultC1 = "Ask OVER half UNDER R1."    
+            pStateResultC1 = "Ask OVER mid point UNDER R1."    
         }
         else if (ask > support1 && ask < srMid) {
             saDiff = (ask - support1)
             saDiffPct = saDiff/srDiff1
             saDiffPct = 1 - saDiffPct
             pStateC1 = Math.round((pStateAmt * .5) * saDiffPct)
-            pStateResultC1 = "Ask UNDER half OVER S1."
+            pStateResultC1 = "Ask UNDER mid point OVER S1."
         }
         else if (ask < support1) {
             pStateC1 = pStateAmt * -.5
