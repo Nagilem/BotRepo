@@ -237,12 +237,12 @@
         } 
         if (debug == true) {
             console.log("--------------------------------------------------------------------")
-            console.log("Cloud State: " + cState + " Color: " + cColor + " | Lead1: "  + leadLine1 + " Lead2: " + leadLine2)
+            console.log("Cloud: " + cState + " Color: " + cColor + " | Lead1: "  + leadLine1 + " Lead2: " + leadLine2)
             console.log("--------------------------------------------------------------------")
         }
         else {
             console.log("--------------------------------------------------------------------")
-            console.log("Cloud State: " + cState + " Color: " + cColor)
+            console.log("Cloud: " + cState + " Color: " + cColor)
             console.log("--------------------------------------------------------------------")
         }
         // checking if the conversion line is bullish
@@ -314,7 +314,7 @@
         }
 
         bState = bStateC1 + bStateC2 + bStateC3 + bStateC4
-        console.log("Conversion / Baseline: " + bState + " | C1: " + bStateC1 + "   C2: " + bStateC2 + "   C3: " + bStateC3 + "   C4: " + bStateC4)
+        console.log("Baseline: " + bState + " | C1: " + bStateC1 + "   C2: " + bStateC2 + "   C3: " + bStateC3 + "   C4: " + bStateC4)
         console.log("--------------------------------------------------------------------")
         
         if (debug == true) {
@@ -367,7 +367,7 @@
             rState = noAmt
             rStateReason = "Inconclusive trend."
         }
-        console.log("Rising State: " + rState + " | Reason: " + rStateReason)
+        console.log("Rising: " + rState + " | Reason: " + rStateReason)
         console.log("--------------------------------------------------------------------")
         if (debug == true) {
             console.log("   Ask[9]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 9])
@@ -458,9 +458,9 @@
         
         pState = pStateC1 + pStateC2
         
-        console.log("Price State: " + pState + " | C1 Result: " + pStateResultC1 + " C2 Result: " + pStateResultC2)
+        console.log("Price: " + pState + " | C1 Result: " + pStateResultC1 + " C2 Result: " + pStateResultC2)
+        console.log("--------------------------------------------------------------------")
         if (debug == true) {
-            console.log("--------------------------------------------------------------------")
             console.log("C1: " + pStateC1)
             console.log("   Ask " + ask)
             console.log("   R1: " + resistance1)
@@ -482,7 +482,7 @@
         else {
             lState = noAmt // orange above
         }   
-        console.log("Lag State: " + lState + " | Ask: " + ask + " Lag Span 15 Avg: " + clAvg)
+        console.log("Lag: " + lState + " | Ask: " + ask + " Lag Span 15 Avg: " + clAvg)
 
         //Adding up criteria points to make a decision
         buyState = rState + bState + pState + lState + cState
@@ -499,12 +499,14 @@
         }
       
         //pushing data to log screen for review
+        console.log(" ")
         console.log("********************************************************************")
         console.log("********************************************************************")
         console.log("Current Buy State of " + pairName + " is: " + buyState + " - " + buyDec)
         console.log("********************************************************************")
         console.log("********************************************************************")
-    
+        console.log(" ")
+
         //Setting hold in event that the bot just sold the asset last round
         if (gb.data.pairLedger.customStratStore.h.sellWait >= gb.data.pairLedger.customStratStore.h.cnt) {
             buyDec = "Hold"
