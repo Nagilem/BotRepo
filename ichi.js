@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a46"
+    const botVer = "4.0.1-a47"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -390,14 +390,14 @@
         else if (ask > srMid && ask < resistance1) {
             saDiff = (ask - srMid)
             saDiffPct = (saDiff/srDiff1) * -1 
-            pStateC1 = (pStateAmt * .5) * saDiffPct 
+            pStateC1 = Math.round((pStateAmt * .5) * saDiffPct)
             pStateResultC1 = "Ask OVER half UNDER R1."    
         }
         else if (ask > support1 && ask < srMid) {
             saDiff = (ask - support1)
             saDiffPct = saDiff/srDiff1
             saDiffPct = 1 - saDiffPct
-            pStateC1 = (pStateAmt * .5) * saDiffPct 
+            pStateC1 = Math.round((pStateAmt * .5) * saDiffPct)
             pStateResultC1 = "Ask UNDER half OVER S1."
         }
         else if (ask < support1) {
