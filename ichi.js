@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a50"
+    const botVer = "4.0.1-a51"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -236,14 +236,12 @@
             cColor = "Red"
         } 
         if (debug == true) {
-            console.log("--------------------------------------------------------------------")
+            console.log("********************************************************************")
             console.log("Cloud: " + cState + " Color: " + cColor + " | Lead1: "  + leadLine1 + " Lead2: " + leadLine2)
-            console.log("--------------------------------------------------------------------")
         }
         else {
-            console.log("--------------------------------------------------------------------")
+            console.log("********************************************************************")
             console.log("Cloud: " + cState + " Color: " + cColor)
-            console.log("--------------------------------------------------------------------")
         }
         // checking if the conversion line is bullish
         if (conversionLine >= baseLine) {
@@ -315,7 +313,6 @@
 
         bState = bStateC1 + bStateC2 + bStateC3 + bStateC4
         console.log("Baseline: " + bState + " | C1: " + bStateC1 + "   C2: " + bStateC2 + "   C3: " + bStateC3 + "   C4: " + bStateC4)
-        console.log("--------------------------------------------------------------------")
         
         if (debug == true) {
             console.log("   C1: " + bStateC1 + " | Conversion: " + conversionLine + " Base: " + baseLine)
@@ -328,7 +325,6 @@
             else {
                 console.log("   C4: " + bStateC4 + " | Last Cross: " + gb.data.pairLedger.customStratStore.h.bStateCrossDate)
             }
-            console.log("--------------------------------------------------------------------")
         }
         // checking to see if the price is rising or falling over past rounds
         askDiff = ask - gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length -2]
@@ -368,7 +364,6 @@
             rStateReason = "Inconclusive trend."
         }
         console.log("Rising: " + rState + " | Reason: " + rStateReason)
-        console.log("--------------------------------------------------------------------")
         if (debug == true) {
             console.log("   Ask[9]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 9])
             console.log("   Ask[6]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 6])
@@ -382,7 +377,6 @@
             else {
                 console.log("   Ask: " + ask + " | Difference: " + askDiff + "  " + (askPctNeg * 100) + "% Comparison: " + askLow)   
             }
-            console.log("--------------------------------------------------------------------")
         }   
                 
         //calculating the current ask versus the support/resistance lines        
@@ -459,7 +453,6 @@
         pState = pStateC1 + pStateC2
         
         console.log("Price: " + pState + " | C1 Result: " + pStateResultC1 + " C2 Result: " + pStateResultC2)
-        console.log("--------------------------------------------------------------------")
         if (debug == true) {
             console.log("C1: " + pStateC1)
             console.log("   Ask " + ask)
@@ -472,7 +465,6 @@
             console.log("   Close[3]: " + gb.data.candlesClose[gb.data.candlesClose.length - 3])
             console.log("   Close[2]: " + gb.data.candlesClose[gb.data.candlesClose.length - 2])
             console.log("   Close[1]: " + gb.data.candlesClose[gb.data.candlesClose.length - 1])
-            console.log("--------------------------------------------------------------------")
         }
 
         // checking if closing price is over the closing average for last 15 candles 
@@ -499,13 +491,11 @@
         }
       
         //pushing data to log screen for review
-        console.log(" ")
-        console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        console.log("********************************************************************")
         console.log("--------------------------------------------------------------------")
         console.log("Current Buy State of " + pairName + " is: " + buyState + " - " + buyDec)
         console.log("--------------------------------------------------------------------")
-        console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-        console.log(" ")
+        console.log("********************************************************************")
 
         //Setting hold in event that the bot just sold the asset last round
         if (gb.data.pairLedger.customStratStore.h.sellWait >= gb.data.pairLedger.customStratStore.h.cnt) {
