@@ -445,7 +445,7 @@
             pStateResultC2 = "Inconclusive trend."
         }
         
-        pState = pStateC1 + pstateC2
+        pState = pStateC1 + pStateC2
         
         console.log("Price State: " + pState + " | C1 Result: " + pStateResultC1 + " C2 Result: " + pStateResultC2)
         console.log("--------------------------------------------------------------------")
