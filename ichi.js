@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a51"
+    const botVer = "4.0.1-a52"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -237,11 +237,11 @@
         } 
         if (debug == true) {
             console.log("********************************************************************")
-            console.log("Cloud: " + cState + " Color: " + cColor + " | Lead1: "  + leadLine1 + " Lead2: " + leadLine2)
+            console.log("Cloud (" + cStateAmt + "): " + cState + " Color: " + cColor + " | Lead1: "  + leadLine1 + " Lead2: " + leadLine2)
         }
         else {
             console.log("********************************************************************")
-            console.log("Cloud: " + cState + " Color: " + cColor)
+            console.log("Cloud (" + cStateAmt + "): " + cState + " Color: " + cColor)
         }
         // checking if the conversion line is bullish
         if (conversionLine >= baseLine) {
@@ -312,7 +312,7 @@
         }
 
         bState = bStateC1 + bStateC2 + bStateC3 + bStateC4
-        console.log("Baseline: " + bState + " | C1: " + bStateC1 + "   C2: " + bStateC2 + "   C3: " + bStateC3 + "   C4: " + bStateC4)
+        console.log("Baseline (" + bStateAmt + "): " + bState + " | C1: " + bStateC1 + "   C2: " + bStateC2 + "   C3: " + bStateC3 + "   C4: " + bStateC4)
         
         if (debug == true) {
             console.log("   C1: " + bStateC1 + " | Conversion: " + conversionLine + " Base: " + baseLine)
@@ -363,7 +363,7 @@
             rState = noAmt
             rStateReason = "Inconclusive trend."
         }
-        console.log("Rising: " + rState + " | Reason: " + rStateReason)
+        console.log("Rising (" + rStateAmt + "): " + rState + " | Reason: " + rStateReason)
         if (debug == true) {
             console.log("   Ask[9]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 9])
             console.log("   Ask[6]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 6])
@@ -452,7 +452,7 @@
         
         pState = pStateC1 + pStateC2
         
-        console.log("Price: " + pState + " | C1 Result: " + pStateResultC1 + " C2 Result: " + pStateResultC2)
+        console.log("Price (" + pStateAmt + "): " + pState + " | C1 Result: " + pStateResultC1 + " C2 Result: " + pStateResultC2)
         if (debug == true) {
             console.log("C1: " + pStateC1)
             console.log("   Ask " + ask)
@@ -474,7 +474,7 @@
         else {
             lState = noAmt // orange above
         }   
-        console.log("Lag: " + lState + " | Ask: " + ask + " Lag Span 15 Avg: " + clAvg)
+        console.log("Lag (" + lStateAmt + "): " + lState + " | Ask: " + ask + " Lag Span 15 Avg: " + clAvg)
 
         //Adding up criteria points to make a decision
         buyState = rState + bState + pState + lState + cState
