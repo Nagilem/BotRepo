@@ -2,26 +2,28 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a49"
+    const botVer = "4.0.1-a50"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
+
+    const bStateAmt = 30 // ** the total amount of points out of 100 for conversion line over base line - no points for bearish indication
+    const cStateAmt = 15 // ** total amount of points out of 100 for cloud being green - no points for red
+    const lStateAmt = 10 // ** the total amount of points out of 100 for close higher than SMA for last 15 closes - no points if close is below
+    const pStateAmt = 35 // ** the total amount of points out of 100 for price in previous candles and support/resistance zone - can have neg points
+    const rStateAmt = 10 // ** the total amount of points out of 100 for rising price over previous rounds - can have neg points
+    
     const askPctPos = .003 //percent of ask to evaluate if the current ask is higher than last round
     const askPctNeg = -.0025 //percent of ask to evaluate if the current ask is lower than last round signficantly
     const askPctIB = .09 //percent of ask to evaluate if the current ask warrants in immediate buy 
     const AvgNum = 30 //number of candles to average to figure the rate of change of conversion line
-    const bStateAmt = 25 // ** the total amount of points out of 100 for conversion line over base line - no points for bearish indication
     const buyThreshold = 66 // number between 0-100 to tell the bot the floor of the evaluated indicators at which to buy
-    const cStateAmt = 10 // ** total amount of points out of 100 for cloud being green - no points for red
     const entries = 60 //number of historical entries to keep for evaluation before starting culling
     const fcPct = -.035  //percent threshold below buy price to allow evaluation of fundamental criteria for sale of assets
-    const ImmedBuy = buyThreshold + 1 //points needed to force an immediate buy of an asset
-    const lStateAmt = 10 // ** the total amount of points out of 100 for close higher than SMA for last 15 closes - no points if close is below
+    const immedBuy = buyThreshold + 1 //points needed to force an immediate buy of an asset
     const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; //months for date calcs
     const noAmt = 0 // no points for bearish indicator
-    const pStateAmt = 35 // ** the total amount of points out of 100 for price above cloud support - no points for price below cloud support
     const purchaseAmt = 150 // amount in USDT to use per trade
-    const rStateAmt = 20 // ** the total amount of points out of 100 for rising price over last three rounds
     const sellThreshold = 14 // number between 0-100 to tell the bot the threshold of the evaluated indicators at which to sell
     const sellWaitGain = 1 //number of rounds to wait before allowing another purchases when last was a gain
     const sellWaitLoss = 15 //number of rounds to wait before allowing another purchase when last was a loss
@@ -33,7 +35,7 @@
     const trailPct2 = .025 //pct amount of trail stop after 10% profit
     const trailPct3 = .035 //pct amount of trail stop after 25% profit
     
-    // Variables to be set as the script is processing
+    // Variables to be set as the script is processing - these set automatically
     var ask = gb.data.ask //ask price
     var askDiff = 0
     var askHigh = 0
@@ -63,6 +65,7 @@
     var clSum = 0
     var conversionLine = gb.data.tenkan
     var cState = 0
+    var debug = false
     var gainCalc = 0
     var infoRef = Date.now() - 900000 //refresh time to check - data should be less than 15 mins old.
     var lagSpan = gb.data.chikou
@@ -130,13 +133,13 @@
         return  
     }
 
-    //checking on hist object to store historical data.
-    if (_.isNil(gb.data.pairLedger.customStratStore.h)) { //checking for the hist object. Create if none.
+    //checking on h object to store historical data.
+    if (_.isNil(gb.data.pairLedger.customStratStore.h)) { //checking for the h object. Create if none.
         console.log("No history store exists... Setting up history store.")
         gb.data.pairLedger.customStratStore.h = {}
         gb.data.pairLedger.customStratStore.h.lastRef = Date.now()
     }
-    else if (_.isNil(gb.data.pairLedger.customStratStore.h.lastRef)) { //checking for a lasst refresh date. Refresh if none.
+    else if (_.isNil(gb.data.pairLedger.customStratStore.h.lastRef)) { //checking for a last refresh date. Refresh if none.
         console.log("History store does not have a last refresh date... Refreshing history store.")
         gb.data.pairLedger.customStratStore.h = {}
         gb.data.pairLedger.customStratStore.h.lastRef = Date.now()
@@ -211,7 +214,8 @@
             clSum = clArray[i] + clSum
             }   
         clAvg = clSum / AvgNum
-
+        
+        /*
         // checking if the cloud is pointing long or short
         if (tradeState == "None" && leadLine1 > leadLine2) {
             tradeState = "+++++Long+++++"
@@ -220,10 +224,30 @@
             tradeState = "-----Short-----"
         } 
         console.log("Bot general state is: " + tradeState)
-        
+        */
+
+        // checking cloud state - green or red
+        if (leadLine1 >= leadLine2) {
+            cState = cStateAmt // cloud green
+            cColor = "Green"
+        }
+        else {
+            cState = noAmt // cloud red
+            cColor = "Red"
+        } 
+        if (debug == true) {
+            console.log("--------------------------------------------------------------------")
+            console.log("Cloud State: " + cState + " Color: " + cColor + " | Lead1: "  + leadLine1 + " Lead2: " + leadLine2)
+            console.log("--------------------------------------------------------------------")
+        }
+        else {
+            console.log("--------------------------------------------------------------------")
+            console.log("Cloud State: " + cState + " Color: " + cColor)
+            console.log("--------------------------------------------------------------------")
+        }
         // checking if the conversion line is bullish
         if (conversionLine >= baseLine) {
-            bStateC1 = bStateAmt * .3 // blue line high
+            bStateC1 = bStateAmt * .5 // blue line high
         }
         else {
             bStateC1 = noAmt // red line high
@@ -235,7 +259,7 @@
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 10] >= gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 20] 
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1] >= gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 10]
             ) {
-            bStateC2 = bStateAmt * .3
+            bStateC2 = bStateAmt * .25
         }
         else if (
             gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 5] >= gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 10] 
@@ -259,7 +283,7 @@
         bStateSlope = bStateLine / gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1]
 
         if(bStateSlope > .005) {
-            bStateC3 = bStateAmt * .3
+            bStateC3 = bStateAmt * .25
         }
         else if (bStateSlope > .0015 && bStateSlope < .005) {
             bStateC3 = bStateAmt * .15
@@ -268,52 +292,44 @@
             bStateC3 = bStateAmt * .05
         }
 
-        //checking if a cross has happened within the past 4 rounds
+        //checking if a cross has happened within the past 2 rounds
         if (
             gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1] >= gb.data.pairLedger.customStratStore.h.bLine[gb.data.pairLedger.customStratStore.h.bLine.length - 1] 
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 2] <= gb.data.pairLedger.customStratStore.h.bLine[gb.data.pairLedger.customStratStore.h.bLine.length - 2]
             ) {
-            let bStateCrossDate = new Date()
-            gb.data.pairLedger.customStratStore.h.bStateCrossDate = ("0" + bStateCrossDate.getHours()).slice(-2) + ":" + ("0" + bStateCrossDate.getMinutes()).slice(-2) + " " + ("0" + bStateCrossDate.getDate()).slice(-2) + "-" + months[bStateCrossDate.getMonth()] + "-" + bStateCrossDate.getFullYear()
-            bStateC4 = bStateAmt * .1
+                let bStateCrossDate = new Date()
+                gb.data.pairLedger.customStratStore.h.bStateCrossDate = ("0" + bStateCrossDate.getHours()).slice(-2) + ":" + ("0" + bStateCrossDate.getMinutes()).slice(-2) + " " + ("0" + bStateCrossDate.getDate()).slice(-2) + "-" + months[bStateCrossDate.getMonth()] + "-" + bStateCrossDate.getFullYear()
+                bStateC4 = immedBuy
         }
         else if (
             gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 2] >= gb.data.pairLedger.customStratStore.h.bLine[gb.data.pairLedger.customStratStore.h.bLine.length - 2] 
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 3] <= gb.data.pairLedger.customStratStore.h.bLine[gb.data.pairLedger.customStratStore.h.bLine.length - 3]
             ) {
-            let bStateCrossDate = new Date()
-            gb.data.pairLedger.customStratStore.h.bStateCrossDate = ("0" + bStateCrossDate.getHours()).slice(-2) + ":" + ("0" + bStateCrossDate.getMinutes()).slice(-2) + " " + ("0" + bStateCrossDate.getDate()).slice(-2) + "-" + months[bStateCrossDate.getMonth()] + "-" + bStateCrossDate.getFullYear()
-            bStateC4 = bStateAmt * .1
-        }
-        else if (
-            gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 3] >= gb.data.pairLedger.customStratStore.h.bLine[gb.data.pairLedger.customStratStore.h.bLine.length - 3] 
-            && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 4] <= gb.data.pairLedger.customStratStore.h.bLine[gb.data.pairLedger.customStratStore.h.bLine.length - 4]
-            ) {
-            let bStateCrossDate = new Date()
-            gb.data.pairLedger.customStratStore.h.bStateCrossDate = ("0" + bStateCrossDate.getHours()).slice(-2) + ":" + ("0" + bStateCrossDate.getMinutes()).slice(-2) + " " + ("0" + bStateCrossDate.getDate()).slice(-2) + "-" + months[bStateCrossDate.getMonth()] + "-" + bStateCrossDate.getFullYear()
-            bStateC4 = bStateAmt * .1 
+                let bStateCrossDate = new Date()
+                gb.data.pairLedger.customStratStore.h.bStateCrossDate = ("0" + bStateCrossDate.getHours()).slice(-2) + ":" + ("0" + bStateCrossDate.getMinutes()).slice(-2) + " " + ("0" + bStateCrossDate.getDate()).slice(-2) + "-" + months[bStateCrossDate.getMonth()] + "-" + bStateCrossDate.getFullYear()
+                bStateC4 = immedBuy
         }
         else {
             bStateC4 = noAmt
         }
 
         bState = bStateC1 + bStateC2 + bStateC3 + bStateC4
-        console.log("--------------------------------------------------------------------")
         console.log("Conversion / Baseline: " + bState + " | C1: " + bStateC1 + "   C2: " + bStateC2 + "   C3: " + bStateC3 + "   C4: " + bStateC4)
         console.log("--------------------------------------------------------------------")
-        console.log("   C1: " + bStateC1 + " | Conversion: " + conversionLine + " Base: " + baseLine)
-        console.log("   C2: " + bStateC2 + " | cLine[30]: " + gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 30] + " cLine[20]: " + gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 20] + " cLine[10]: " + gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 10] + " cLine[1]: " + gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1])
-        console.log("   C3: " + bStateC3 + " | bStateAvg: " + bStateAvg + "  bStateLine: " + bStateLine + "  bStateSlope: " + bStateSlope + " cLine: " + gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length- 1])
         
-        if (_.isNil(gb.data.pairLedger.customStratStore.h.bStateCrossDate)) {
-            console.log("   C4: " + bStateC4 + " | Last Cross: None")   
+        if (debug == true) {
+            console.log("   C1: " + bStateC1 + " | Conversion: " + conversionLine + " Base: " + baseLine)
+            console.log("   C2: " + bStateC2 + " | cLine[30]: " + gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 30] + " cLine[20]: " + gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 20] + " cLine[10]: " + gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 10] + " cLine[1]: " + gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1])
+            console.log("   C3: " + bStateC3 + " | bStateAvg: " + bStateAvg + "  bStateLine: " + bStateLine + "  bStateSlope: " + bStateSlope + " cLine: " + gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length- 1])
+            
+            if (_.isNil(gb.data.pairLedger.customStratStore.h.bStateCrossDate)) {
+                console.log("   C4: " + bStateC4 + " | Last Cross: None")   
+            }
+            else {
+                console.log("   C4: " + bStateC4 + " | Last Cross: " + gb.data.pairLedger.customStratStore.h.bStateCrossDate)
+            }
+            console.log("--------------------------------------------------------------------")
         }
-        else {
-            console.log("   C4: " + bStateC4 + " | Last Cross: " + gb.data.pairLedger.customStratStore.h.bStateCrossDate)
-        }
-
-        console.log("--------------------------------------------------------------------")
-        
         // checking to see if the price is rising or falling over past rounds
         askDiff = ask - gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length -2]
         askIB = askPctIB * ask
@@ -328,7 +344,7 @@
             rStateReason = "Price is trending UP for last three evaluated rounds."
         }
         else if(askDiff > askIB) {
-            rState = ImmedBuy
+            rState = immedBuy
             rStateReason = "Price is SIGNIFICANTLY HIGHER this round from last round. IMMEDIATE BUY."
         }
         else if(askDiff > askHigh) {
@@ -353,32 +369,22 @@
         }
         console.log("Rising State: " + rState + " | Reason: " + rStateReason)
         console.log("--------------------------------------------------------------------")
-        console.log("   Ask[9]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 9])
-        console.log("   Ask[6]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 6])
-        console.log("   Ask[3]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 3])
-        if (askDiff > askIB) {
-            console.log("   Ask: " + ask + " | Difference: " + askDiff + "  " + (askPctIB * 100) + "% Comparison: " + askIB)
-        }
-        else if (askDiff > 0) {
-        console.log("   Ask: " + ask + " | Difference: " + askDiff + "  " + (askPctPos * 100) + "% Comparison: " + askHigh)
-        }
-        else {
-            console.log("   Ask: " + ask + " | Difference: " + askDiff + "  " + (askPctNeg * 100) + "% Comparison: " + askLow)   
-        }
-        console.log("--------------------------------------------------------------------")
-        
-        // checking cloud state - green or red
-        if (leadLine1 >= leadLine2) {
-            cState = cStateAmt // cloud green
-            cColor = "Green"
-        }
-        else {
-            cState = noAmt // cloud red
-            cColor = "Red"
-        } 
-        console.log("Cloud State: " + cState + " Color: " + cColor + " | Lead1: "  + leadLine1 + " Lead2: " + leadLine2 )
-        console.log("--------------------------------------------------------------------")
-        
+        if (debug == true) {
+            console.log("   Ask[9]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 9])
+            console.log("   Ask[6]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 6])
+            console.log("   Ask[3]: " + gb.data.pairLedger.customStratStore.h.ask[gb.data.pairLedger.customStratStore.h.ask.length - 3])
+            if (askDiff > askIB) {
+                console.log("   Ask: " + ask + " | Difference: " + askDiff + "  " + (askPctIB * 100) + "% Comparison: " + askIB)
+            }
+            else if (askDiff > 0) {
+            console.log("   Ask: " + ask + " | Difference: " + askDiff + "  " + (askPctPos * 100) + "% Comparison: " + askHigh)
+            }
+            else {
+                console.log("   Ask: " + ask + " | Difference: " + askDiff + "  " + (askPctNeg * 100) + "% Comparison: " + askLow)   
+            }
+            console.log("--------------------------------------------------------------------")
+        }   
+                
         //calculating the current ask versus the support/resistance lines        
         srDiff1 = (resistance1 - support1) * .5
         srMid = support1 + srDiff1
@@ -453,20 +459,22 @@
         pState = pStateC1 + pStateC2
         
         console.log("Price State: " + pState + " | C1 Result: " + pStateResultC1 + " C2 Result: " + pStateResultC2)
-        console.log("--------------------------------------------------------------------")
-        console.log("C1: " + pStateC1)
-        console.log("   Ask " + ask)
-        console.log("   R1: " + resistance1)
-        console.log("   Mid point: " + srMid)
-        console.log("   S1: " + support1)
-        console.log("   % Diff: " + saDiffPct)
-        console.log("C2: " + pStateC2)
-        console.log("   Close[4]: " + gb.data.candlesClose[gb.data.candlesClose.length - 4])
-        console.log("   Close[3]: " + gb.data.candlesClose[gb.data.candlesClose.length - 3])
-        console.log("   Close[2]: " + gb.data.candlesClose[gb.data.candlesClose.length - 2])
-        console.log("   Close[1]: " + gb.data.candlesClose[gb.data.candlesClose.length - 1])
-        console.log("--------------------------------------------------------------------")
-        
+        if (debug == true) {
+            console.log("--------------------------------------------------------------------")
+            console.log("C1: " + pStateC1)
+            console.log("   Ask " + ask)
+            console.log("   R1: " + resistance1)
+            console.log("   Mid point: " + srMid)
+            console.log("   S1: " + support1)
+            console.log("   % Diff: " + saDiffPct)
+            console.log("C2: " + pStateC2)
+            console.log("   Close[4]: " + gb.data.candlesClose[gb.data.candlesClose.length - 4])
+            console.log("   Close[3]: " + gb.data.candlesClose[gb.data.candlesClose.length - 3])
+            console.log("   Close[2]: " + gb.data.candlesClose[gb.data.candlesClose.length - 2])
+            console.log("   Close[1]: " + gb.data.candlesClose[gb.data.candlesClose.length - 1])
+            console.log("--------------------------------------------------------------------")
+        }
+
         // checking if closing price is over the closing average for last 15 candles 
         if (ask > clAvg) {
             lState = lStateAmt // green above
@@ -492,7 +500,9 @@
       
         //pushing data to log screen for review
         console.log("********************************************************************")
+        console.log("********************************************************************")
         console.log("Current Buy State of " + pairName + " is: " + buyState + " - " + buyDec)
+        console.log("********************************************************************")
         console.log("********************************************************************")
     
         //Setting hold in event that the bot just sold the asset last round
@@ -505,10 +515,11 @@
         }
         
         console.log("Starting trade operations...")
-        console.log("Base: " + gb.data.baseBalance + " | Quote: " + gb.data.quoteBalance)
+        console.log("Base: " + gb.data.baseBalance + " | Quote: " + gb.data.quoteBalance + " | Purchase Amount: " + purchaseAmt)
         console.log("Buy: " + buyThreshold + " | Sell: " + sellThreshold)
-        console.log("Stop %: " + (stopLimitPct * 100) + "% | Trail Activate %: " + (trailBasePct * 100) + "% | Trail %: " + (gb.data.pairLedger.customStratStore.h.trailPct * 100) + "%")
-
+        console.log("Stop %: " + Math.round(stopLimitPct * 100) + "% | Trail Activate %: " + Math.round(trailBasePct * 100) + "% | Trail %: " + Math.round(gb.data.pairLedger.customStratStore.h.trailPct * 100) + "%")
+        console.log("********************************************************************")
+    
         //checking to see if the opposite pairing has already been bought
         pairStrCnt = pairName.length
         pairDash = pairName.search("-")
