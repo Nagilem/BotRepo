@@ -1,8 +1,8 @@
 {
-    //custom bot v1 by Rob Esparza
-    //Started 3/4/2022, latest update 3/26/2022. See version below.
+    //custom bot by Rob Esparza
+    //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a42"
+    const botVer = "4.0.1-a43"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -383,20 +383,26 @@
         saDiff = (ask - support1) * .5
         saDiffPct = saDiff/srDiff1
         
-        if (saDiffPct > 1){
+        if (((ask - support1)/(resistance1 - support1)) > 1){
             pStateC1 = pStateAmt * .5
             pStateResultC1 = "Ask OVER R1."
         }
-        else if (saDiffPct < 1 && saDiffPct >= .5) {
+        else if (
+            ((ask - support1)/(resistance1 - support1)) < 1 
+            && ((ask - support1)/(resistance1 - support1)) >= .5
+        ) {
             pStateC1 = (pStateAmt * -.5) * saDiffPct 
             pStateResultC1 = "Ask OVER half UNDER R1."
         }
-        else if (saDiffPct < .5 && saDiffPct > .0) {
+        else if (
+            ((ask - support1)/(resistance1 - support1)) < .5 
+            && ((ask - support1)/(resistance1 - support1)) > .0
+        ) {
             saDiffPct = 1 - saDiffPct
             pStateC1 = (pStateAmt * .5) * saDiffPct 
             pStateResultC1 = "Ask UNDER half OVER S1."
         }
-        else if (saDiffPct < 0) {
+        else if (((ask - support1)/(resistance1 - support1)) < 0) {
             pStateC1 = pStateAmt * -.5
             pStateResultC1 = "Ask UNDER S1."
         }
