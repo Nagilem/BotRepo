@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a56"
+    const botVer = "4.0.1-a57"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -556,7 +556,7 @@
         }
         
         //setting up buy conditions and making purchase
-        if (gb.data.quoteBalance << 1 && buyDec == "Buy" && noOPair == true) {
+        if (gb.data.quoteBalance < 1 && buyDec == "Buy" && noOPair == true) {
             console.log("There are no open orders and criteria is set to " + buyDec + ". Setting entry point...")
             console.log("Purchasing " + buyAmt + " of " + pairName + "...")
             gb.method.buyMarket(buyAmt, pairName)
