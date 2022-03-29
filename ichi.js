@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a55"
+    const botVer = "4.0.1-a56"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -548,7 +548,7 @@
             console.log("This is a new pair . No contradicting assets. Purchase actions authorized.")
         }
         else if(gb.data.quoteBalance > 1) {
-            console.log("EXISTING POSITION: " + pairName + " position opened for " + Max.round(gb.data.quoteBalance) + " assets." )
+            console.log("EXISTING POSITION: " + pairName + " position opened for " + Math.round(gb.data.quoteBalance) + " assets." )
         }
         else{
             noOPair = true
