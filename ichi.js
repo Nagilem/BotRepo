@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a53"
+    const botVer = "4.0.1-a54"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -552,7 +552,7 @@
         }
         
         //setting up buy conditions and making purchase
-        if (gb.data.quoteBalance == 0 && buyDec == "Buy" && noOPair == true) {
+        if (gb.data.quoteBalance << 1 && buyDec == "Buy" && noOPair == true) {
             console.log("There are no open orders and criteria is set to " + buyDec + ". Setting entry point...")
             console.log("Purchasing " + buyAmt + " of " + pairName + "...")
             gb.method.buyMarket(buyAmt, pairName)
@@ -570,16 +570,16 @@
         }
 
         //setting up sell conditions for stop, trail and criteria
-        if (gb.data.quoteBalance > 0 && ask < gb.data.pairLedger.customStratStore.h.stopLoss) {
+        if (gb.data.quoteBalance > 1 && ask < gb.data.pairLedger.customStratStore.h.stopLoss) {
             sellNow = true
             sellReason = "Selling due to Stop/Limit breach."
         }
-        else if (gb.data.quoteBalance > 0 && ask < gb.data.pairLedger.customStratStore.h.trailPrice) {
+        else if (gb.data.quoteBalance > 1 && ask < gb.data.pairLedger.customStratStore.h.trailPrice) {
             sellNow = true
             sellReason = "Selling due to Trail stop breach."
         }
         else if (
-            gb.data.quoteBalance > 0
+            gb.data.quoteBalance > 1
             && gb.data.pairLedger.customStratStore.h.lag[gb.data.pairLedger.customStratStore.h.lag.length - 1] < gb.data.pairLedger.customStratStore.h.lag[gb.data.pairLedger.customStratStore.h.lag.length - 2]
             && gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 1] < gb.data.pairLedger.customStratStore.h.cLine[gb.data.pairLedger.customStratStore.h.cLine.length - 2]
             && gb.data.pairLedger.customStratStore.h.lead1[gb.data.pairLedger.customStratStore.h.lead1.length - 1] < gb.data.pairLedger.customStratStore.h.lead1[gb.data.pairLedger.customStratStore.h.lead1.length - 2]
@@ -589,7 +589,7 @@
             sellReason = "Sold due to declining indicators."   
         }
         else if (
-            gb.data.quoteBalance > 0
+            gb.data.quoteBalance > 1
             && buyDec == "Sell"
             && gainCalc < fcPct
         ) {
@@ -618,7 +618,7 @@
             gb.data.pairLedger.customStratStore.h.trailPrice = Math.max(trailCalc, gb.data.pairLedger.customStratStore.h.trailPrice)
         }
 
-        if (gb.data.quoteBalance > 0) {
+        if (gb.data.quoteBalance > 1) {
             console.log("Last Price bought: " + gb.data.pairLedger.customStratStore.h.buyPrice[gb.data.pairLedger.customStratStore.h.buyPrice.length -1] + " | Gain %: " + (gainCalc * 100) + "%")
             console.log("Stop/Loss price: " + gb.data.pairLedger.customStratStore.h.stopLoss, )
             console.log("Trail base activation price: " + gb.data.pairLedger.customStratStore.h.trailBase + " | Ask now: " + ask)
