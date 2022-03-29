@@ -541,13 +541,11 @@
         if (pairBalanceAmt > 1) {
             noOPair = false
             console.log(pairOp + " found with " + pairBalanceAmt + " assets. Holding purchases...")
-            console.log("********************************************************************")
          
         }
         else if (pairBalanceAmt == -1) {
             noOPair = true
             console.log("This is a new pair . No contradicting assets. Purchase actions authorized.")
-            console.log("********************************************************************")
         }
         else if(gb.data.quoteBalance > 1) {
             console.log("EXISTING POSITION: " + pairName + " position opened for " + Max.round(gb.data.quoteBalance) + " assets." )
@@ -555,7 +553,6 @@
         else{
             noOPair = true
             console.log("No contradicting assets found. Purchase actions authorized.")
-            console.log("********************************************************************")
         }
         
         //setting up buy conditions and making purchase
@@ -626,6 +623,7 @@
         }
 
         if (gb.data.quoteBalance > 1) {
+            console.log("********************************************************************")
             console.log("Last Price bought: " + gb.data.pairLedger.customStratStore.h.buyPrice[gb.data.pairLedger.customStratStore.h.buyPrice.length -1] + " | Gain %: " + (gainCalc * 100) + "%")
             console.log("Stop/Loss price: " + gb.data.pairLedger.customStratStore.h.stopLoss, )
             console.log("Trail base activation price: " + gb.data.pairLedger.customStratStore.h.trailBase + " | Ask now: " + ask)
