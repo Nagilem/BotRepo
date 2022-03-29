@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a52"
+    const botVer = "4.0.1-a53"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -384,7 +384,7 @@
         srMid = support1 + srDiff1
         
         if (ask > resistance1) {
-            pStateC1 = pStateAmt * .5
+            pStateC1 = pStateAmt * -.5
             pStateResultC1 = "Ask OVER R1."
         }
         else if (ask >= srMid && ask < resistance1) {
@@ -401,11 +401,11 @@
             pStateResultC1 = "Ask UNDER mid point OVER S1."
         }
         else if (ask < support1) {
-            pStateC1 = pStateAmt * -.5
+            pStateC1 = pStateAmt * .5
             pStateResultC1 = "Ask UNDER S1."
         }
 
-        // checking price history for green or red candle closes over the past 4 candles
+        // checking price history for green or red candle closes over the past 3 candles
         if (
             gb.data.candlesClose[gb.data.candlesClose.length - 4] < gb.data.candlesClose[gb.data.candlesClose.length - 3]
             && gb.data.candlesClose[gb.data.candlesOpen.length - 4] < gb.data.candlesClose[gb.data.candlesLow.length - 3]
@@ -534,11 +534,11 @@
             pairBalanceAmt = -1
         }
         else {
-            pairBalanceAmt = balances[pairOp]["available"]
+            pairBalanceAmt = Math.round(balances[pairOp]["available"])
         }
 
         //limiting purchases if contradicting pair has a position
-        if (pairBalanceAmt > 0) {
+        if (pairBalanceAmt > 1) {
             noOPair = false
             console.log(pairOp + " found with " + pairBalanceAmt + " assets. Holding purchases...")
         }
