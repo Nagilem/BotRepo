@@ -2,7 +2,7 @@
     //custom bot by Rob Esparza
     //Started 3/4/2022, latest update 3/27/2022. See version below.
 
-    const botVer = "4.0.1-a54"
+    const botVer = "4.0.1-a55"
     const _ = gb.method.require(gb.modulesPath + '/lodash')
     
     // constants that need setting to tell bot when to buy / sell
@@ -507,7 +507,7 @@
         }
         
         console.log("Starting trade operations...")
-        console.log("Base: " + gb.data.baseBalance + " | Quote: " + gb.data.quoteBalance + " | Purchase Amount: " + purchaseAmt)
+        console.log("Base: " + gb.data.baseBalance + " | Quote: " + gb.data.quoteBalance + " | Purchase Amount: $" + purchaseAmt + " USDT")
         console.log("Buy: " + buyThreshold + " | Sell: " + sellThreshold)
         console.log("Stop %: " + Math.round(stopLimitPct * 100) + "% | Trail Activate %: " + Math.round(trailBasePct * 100) + "% | Trail %: " + Math.round(gb.data.pairLedger.customStratStore.h.trailPct * 100) + "%")
         console.log("********************************************************************")
@@ -541,14 +541,21 @@
         if (pairBalanceAmt > 1) {
             noOPair = false
             console.log(pairOp + " found with " + pairBalanceAmt + " assets. Holding purchases...")
+            console.log("********************************************************************")
+         
         }
         else if (pairBalanceAmt == -1) {
             noOPair = true
             console.log("This is a new pair . No contradicting assets. Purchase actions authorized.")
+            console.log("********************************************************************")
+        }
+        else if(gb.data.quoteBalance > 1) {
+            console.log("EXISTING POSITION: " + pairName + " position opened for " + Max.round(gb.data.quoteBalance) + " assets." )
         }
         else{
             noOPair = true
             console.log("No contradicting assets found. Purchase actions authorized.")
+            console.log("********************************************************************")
         }
         
         //setting up buy conditions and making purchase
@@ -625,7 +632,9 @@
         }
 
         if (gb.data.pairLedger.customStratStore.h.trailBase > 0 && ask > gb.data.pairLedger.customStratStore.h.trailBase) {
-            console.log("Trail price now: " + gb.data.pairLedger.customStratStore.h.trailPrice)
+            console.log("--------------------------------------------------------------------")
+            console.log("TRAIL PRICE SET! Trail price now: " + gb.data.pairLedger.customStratStore.h.trailPrice)
+            console.log("--------------------------------------------------------------------")
         }
 
         console.log("********************************************************************")
