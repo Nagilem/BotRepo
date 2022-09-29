@@ -6,7 +6,7 @@ sudo apt-get update -y -q
 sudo apt-get upgrade -y -q
 sudo apt install wget unzip sqlite -y -q
 cd /home
-sudo wget https://github.com/GuntharDeNiro/BTCT/releases/download/2329/gunthy_linux.zip
+sudo wget https://github.com/GuntharDeNiro/BTCT/releases/download/2423/gunthy_linux.zip
 sudo unzip gunthy_linux.zip
 sudo rm gunthy_linux.zip
 cd /home/gunthy_linux

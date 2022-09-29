@@ -14,11 +14,11 @@ $vpnClientAddressPool = "192.168.0.0/24"
 $vpnCertName = "BotLot_Root"
 $vpnCertData = "D:\OneDrive\BotHeaven\Keys\BotLotRootPub.cer"
 $vmAdmin = "botmaster"
-$vmNum = 10
+$vmNum = 5
 $vmNameBase = "BotLnx"
 
 # login into azure
-#az login
+az login
 
 #create the resource group
 az group create `
